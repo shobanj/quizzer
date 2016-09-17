@@ -1,0 +1,198 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Evaluator</title>
+
+    <link rel="stylesheet" href="jquery-ui-1.12.0.custom/jquery-ui.min.css">
+    <script src="jquery-3.1.0.min.js"></script>
+    <script src="jquery-ui-1.12.0.custom/jquery-ui.js"></script>
+    <!--
+    <script   src="https://code.jquery.com/jquery-3.1.0.min.js"   integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="   crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script> -->
+    <script type="text/javascript" async
+	  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+    <script src="data.js"></script>
+    <script src="e2.js"></script>
+    
+    <script>
+      $( function() {
+
+      $( ".widget input[type=submit], .widget a, .widget button" ).button();
+
+      update_topics();
+      
+      $( "#accordion" ).accordion({
+        heightStyle: "content"
+      });
+
+      $( "#sl_numquestions" ).slider( {
+      min: 1,
+      max: 100,
+      slide: function(event, ui) {
+        $( "#max_q" ).val(ui.value);
+      } } );
+      $( "#sm_evaltype" ).selectmenu();
+      $( "#atc_categories" )
+      .on( "keydown", function( event ) {
+        if ( event.keyCode === $.ui.keyCode.TAB &&
+            $( this ).autocomplete( "instance" ).menu.active ) {
+          event.preventDefault();
+        }
+      })
+      .autocomplete({
+        minLength: 0,
+        source: function( request, response ) {
+          // delegate back to autocomplete, but extract the last term
+          response( $.ui.autocomplete.filter(
+            topics, extractLast( request.term ) ) );
+        },
+        focus: function() {
+          // prevent value inserted on focus
+          return false;
+        },
+        select: function( event, ui ) {
+          var terms = split( this.value );
+          // remove the current input
+          terms.pop();
+          // add the selected item
+          terms.push( ui.item.value );
+          // add placeholder to get the comma-and-space at the end
+          terms.push( "" );
+          this.value = terms.join( ", " );
+
+          var n = get_num_questions(this.value);
+          $( "#available_q" ).val("We have " + n + " questions...");
+
+          $( "#sl_numquestions" ).slider("option", "max", n);
+          $( "#sl_numquestions" ).slider("option", "value", n);
+      
+
+          // $( "#btn_generate").button(n == 0 ? "disable" : "enable");
+      
+          return false;
+      }
+      });
+      
+      $( "#btn_generate" ).click( function() {
+        event.preventDefault();
+
+        initialize();
+      
+        $( "#accordion" ).accordion("option", "active", 1);
+      });
+
+      $( "#btn_first" ).click( function() {
+        on_click_first();
+      });
+
+      $( "#btn_next" ).click( function() {
+        on_click_next();
+      });
+
+      $( "#btn_prev" ).click( function() {
+        on_click_prev();
+      });
+
+      $( "#btn_last" ).click( function() {
+        on_click_last();
+      });
+
+      $( "#btn_finish" ).click( function() {
+        on_click_finish();
+      });
+
+      } );
+    </script>
+  </head>
+  <body>
+    <div id="accordion">
+      <h3>Start a new test</h3>
+      <div>
+	<p>This is where you configure a new test.</p>
+	<p>
+	  <form>
+	    <table cellpadding="5">
+	      <tr>
+		<td>
+		  <label for="atc_categories">Categories:</label>
+		</td>
+		<td>
+		  <input id="atc_categories">
+		  <input type="text" id="available_q" readonly style="border:0; color:#f6931f; font-weight:bold;">
+		</td>
+	      </tr>
+	      <tr>
+		<td>
+		  <label for="sm_evaltype">Take the test:</label>
+		</td>
+		<td>
+		  <select name="sm_evaltype" id="sm_evaltype">
+		    <option selected="selected">Test me now!</option>
+		    <option>Printout for later</option>
+		  </select>
+		</td>
+	      </tr>
+	      <tr>
+		<td>
+		  <label for="sl_numquestions">Number of questions:</label>
+		</td>
+		<td>
+		  <div id="sl_numquestions"></div>
+		  <input type="text" id="max_q" readonly style="border:0; color:#f6931f; font-weight:bold;">
+		</td>
+	      </tr>
+	      <tr>
+		<td>
+		</td>
+		<td>
+		  <button class="ui-button ui-widget ui-corner-all" id="btn_generate">Generate</button>
+		</td>
+	      </tr>
+	    </table>
+	  </form>
+	</p>
+      </div>
+      <h3>Evaluate!</h3>
+      <div>
+	<div id="ev_stat">
+	  <p>Question status go here
+	</div>
+	<div id="ev_question">
+	  <p>Some question goes here...
+	</div>
+	<div id="ev_choices">
+	  <p>The choices go here
+	</div>
+	<div id="ev_navigate">
+	  <hr>
+	  <table>
+	    <tr>
+	      <td>
+		  <button class="ui-button ui-widget ui-corner-all" id="btn_first">First</button>
+	      </td>
+	      <td>
+		  <button class="ui-button ui-widget ui-corner-all" id="btn_prev">Previous</button>
+	      </td>
+	      <td>
+		  <button class="ui-button ui-widget ui-corner-all" id="btn_next">Next</button>
+	      </td>
+	      <td>
+		  <button class="ui-button ui-widget ui-corner-all" id="btn_last">Last</button>
+	      </td>
+	      <td>
+		<button class="ui-button ui-widget ui-corner-all" id="btn_finish">Finish!</button>
+	      </td>	      
+	    </tr>
+	  </table>
+	</div>
+      </div>
+      <h3>Results</h3>
+      <div id="result">
+	<p>This is where you see the results</p>
+      </div>
+    </div>
+  </body>
+</html>

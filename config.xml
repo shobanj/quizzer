@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<widget xmlns   = "http://www.w3.org/ns/widgets"
+	xmlns:gap   = "http://phonegap.com/ns/1.0"
+	id          = "com.sdnworks.qizzer"
+	versionCode = "1"
+	version     = "0.0.1" >
+
+<!-- versionCode is optional and Android only -->
+
+  <name>Quizzer</name>
+
+  <description>
+    A quiz app that allows you to choose within an available category or a group of categories and quiz you.
+  </description>
+
+  <author href="https://build.phonegap.com" email="shoban@gmail.com">
+    Shoban Jayaraj
+  </author>
+
+  <plugin name="com.indigoway.cordova.whitelist.whitelistplugin" source="pgb" />
+  <allow-navigation href="https://cdn.mathjax.org/*" />
+  <access origin="https://cdn.mathjax.org" />
+</widget>
