@@ -1,8 +1,5 @@
 
 var data = { "questions" : [
-    { "cat" : "Others/Simple", "q" : "Who are you?", "a" : [ "Nithin", "Shoban", "Deepa" ], "ca" : 0 },
-    { "cat" : "Others/Simple", "q" : "Which standard are you studying?", "a" : [ "X", "XI", "XII" ], "ca" : 1 },
-    { "cat" : "Others/Simple", "q" : "Which school are you studying in?", "a" : [ "MCC", "Ebbas", "CSI St. Thomas", "St. Patrics" ], "ca" : 1 },
     { "cat" : "Maths/Matrices", "q" : "`[[0,0,0]]` is a ", "a" : ["Unit Matrix", "Scalar Matrix", "Null Matrix", "Diagonal Matrix" ], "ca" : 2 },
 	     { "cat" : "Maths/Matrices", "q" : "`[[6, 2, -3]]` is a matrix of order", "a" : ["3x3", "3x1", "1x3", "Scalar Matrix" ], "ca" : 2 },
     { "cat" : "Maths/Matrices", "q" : "`((1,0),(0,1))` is a ", "a" : ["Unit Matrix", "Zero Matrix of order 2x2", "Unit matrix of 2x2", "None of these" ], "ca" : 0 },
